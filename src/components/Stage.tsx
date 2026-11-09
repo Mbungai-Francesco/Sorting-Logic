@@ -6,7 +6,7 @@ import { computeBarStates, type BarState, type Timeline } from '../core/timeline
 import { useI18n } from '../hooks/useI18n';
 import type { RecordingResult } from '../hooks/useRecording';
 import { BarRow } from './BarRow';
-import { paintSearchOverlay, RowPainter } from './painter';
+import { paintPivotMarker, paintSearchOverlay, RowPainter } from './painter';
 import { SearchOverlay } from './SearchOverlay';
 
 interface Props {
@@ -25,6 +25,7 @@ export function Stage({ player, result, entry, input, caption }: Props) {
   const mainRef = useRef<HTMLDivElement>(null);
   const auxRef = useRef<HTMLDivElement>(null);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const pivotMarkerRef = useRef<HTMLDivElement>(null);
 
   const rec = result.recording;
   const values = rec ? rec.initial : input;
@@ -60,6 +61,9 @@ export function Stage({ player, result, entry, input, caption }: Props) {
       if (overlayRef.current) {
         paintSearchOverlay(overlayRef.current, tl.atEnd ? null : tl.latestProbe(), tl.main.length);
       }
+      if (pivotMarkerRef.current) {
+        paintPivotMarker(pivotMarkerRef.current, tl.atEnd ? null : tl.activePivotStep(), tl.main.length);
+      }
     });
   }, [player, scaleMax, showLabels]);
 
@@ -84,6 +88,7 @@ export function Stage({ player, result, entry, input, caption }: Props) {
             variant="main"
           />
           {isSearch && live ? <SearchOverlay ref={overlayRef} /> : null}
+          {live ? <div ref={pivotMarkerRef} className="pivot-marker" data-hidden="true" aria-hidden="true" /> : null}
         </div>
         <div className="aux-wrap" data-open={entry.needsAux ? 'true' : 'false'}>
           {entry.needsAux ? (

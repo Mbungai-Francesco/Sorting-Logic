@@ -42,7 +42,12 @@ export interface Ctx {
   swap(i: number, j: number, line?: string): Step;
   write(i: number, v: number, line?: string, target?: Target): Step;
   read(i: number, line?: string, target?: Target): Step;
-  pivot(i: number, line?: string): Step;
+  /**
+   * Highlights main[i] as the pivot (or any "special" cell, e.g. the current max).
+   * An optional `label` is drawn as a marker under the bar, like lo / mid / hi.
+   * The highlight stays until the next pivot() or range() step.
+   */
+  pivot(i: number, line?: string, label?: string): Step;
   range(lo: number, hi: number, depth: number, line?: string, target?: Target): Step;
   markSorted(indices: number[], line?: string): Step;
   probe(lo: number, mid: number, hi: number, line?: string): Step;
@@ -170,9 +175,11 @@ export class WorkingCtx implements Ctx {
     return this.emit('read', { type: 'read', target, index: i, line });
   }
 
-  pivot(i: number, line?: string): Step {
+  pivot(i: number, line?: string, label?: string): Step {
     this.check('pivot', i);
-    return this.emit('pivot', { type: 'pivot', index: i, line });
+    const step: Step = { type: 'pivot', index: i, line };
+    if (label !== undefined && label !== '') step.label = label;
+    return this.emit('pivot', step);
   }
 
   range(lo: number, hi: number, depth: number, line?: string, target: Target = 'main'): Step {

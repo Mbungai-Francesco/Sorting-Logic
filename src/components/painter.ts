@@ -65,6 +65,21 @@ export class RowPainter {
   }
 }
 
+/** Places the pivot's label marker under its bar, or hides it. */
+export function paintPivotMarker(
+  el: HTMLElement,
+  pivot: { index: number; label?: string } | null,
+  n: number,
+): void {
+  if (!pivot || pivot.label === undefined || n === 0) {
+    el.dataset.hidden = 'true';
+    return;
+  }
+  el.dataset.hidden = 'false';
+  el.style.left = `${((pivot.index + 0.5) / n) * 100}%`;
+  if (el.textContent !== pivot.label) el.textContent = pivot.label;
+}
+
 export function paintSearchOverlay(
   el: HTMLElement,
   probe: { lo: number; mid: number; hi: number } | null,

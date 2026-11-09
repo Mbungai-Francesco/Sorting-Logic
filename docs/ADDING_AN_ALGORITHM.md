@@ -38,7 +38,7 @@ inverse. You never build steps by hand.
 | `ctx.swap(i, j, line?)` | `swap` | exchanging two cells |
 | `ctx.write(i, v, line?, target?)` | `overwrite` | writing a value into a cell (`'main'` or `'aux'`) |
 | `ctx.read(i, line?, target?)` | `read` | showing that a cell is being read (merge sort, binary search) |
-| `ctx.pivot(i, line?)` | `pivot` | the pivot of the current partition is chosen |
+| `ctx.pivot(i, line?, label?)` | `pivot` | the pivot of the current partition is chosen, or any cell you want to single out (e.g. the current max). With a `label` (`'max'`, `'p'`…), the label is drawn under the bar like lo / mid / hi. The highlight stays until the next `pivot()` or `range()`. |
 | `ctx.range(lo, hi, depth, line?, target?)` | `range` | entering a sub-array (recursive call). Cells outside `[lo, hi]` are dimmed. `depth` feeds the "max depth" counter. |
 | `ctx.markSorted(indices, line?)` | `markSorted` | cells reached their final position (shown in green until you step back) |
 | `ctx.probe(lo, mid, hi, line?)` | `probe` | each iteration of a search: draws the lo/mid/hi markers and shades the eliminated halves |

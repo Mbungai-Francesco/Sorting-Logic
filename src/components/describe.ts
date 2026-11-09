@@ -30,7 +30,9 @@ export function describeStep(step: Step, values: readonly number[], t: I18n['t']
     case 'read':
       return t('capRead', { arr: arr(step.target), i: step.index });
     case 'pivot':
-      return t('capPivot', { i: step.index });
+      return step.label !== undefined
+        ? t('capPivotLabel', { i: step.index, label: step.label })
+        : t('capPivot', { i: step.index });
     case 'range':
       return t('capRange', { lo: step.lo, hi: step.hi, d: step.depth });
     case 'markSorted':

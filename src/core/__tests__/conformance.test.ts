@@ -3,6 +3,7 @@ import { algorithms } from '../../algorithms';
 import { checkRecording } from '../conformance';
 import { generate, PRESET_IDS, type PresetId } from '../generators';
 import { MAX_STEPS, record, RecordingError } from '../recorder';
+import { Timeline } from '../timeline';
 import type { AlgorithmEntry, Ctx, Step } from '../../types';
 
 export const SIZES = [1, 2, 3, 8, 31, 100];
@@ -85,6 +86,27 @@ describe('recorder guards', () => {
     for (const e of algorithms.filter((a) => !a.implemented)) {
       expect(() => record(e, [3, 1, 2], 1)).toThrow(/Not implemented/);
     }
+  });
+
+  it('carries a pivot label and clears the pivot on the next range', () => {
+    const entry = make(function* (ctx) {
+      yield ctx.pivot(1, undefined, 'max');
+      yield ctx.pivot(0);
+      yield ctx.range(0, 0, 0);
+    });
+    const rec = record(entry, [2, 1, 3]);
+    expect(rec.frames[0]).toMatchObject({ type: 'pivot', index: 1, label: 'max' });
+    expect('label' in rec.frames[1]).toBe(false);
+
+    const tl = new Timeline(rec);
+    tl.forward();
+    expect(tl.activePivotStep()).toMatchObject({ index: 1, label: 'max' });
+    tl.forward();
+    expect(tl.activePivotStep()?.label).toBeUndefined();
+    tl.forward();
+    expect(tl.activePivotStep()).toBeNull();
+    tl.backward();
+    expect(tl.activePivot()).toBe(0);
   });
 
   it('records aux writes with working inverses', () => {

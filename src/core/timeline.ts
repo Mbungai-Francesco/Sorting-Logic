@@ -183,13 +183,18 @@ export class Timeline {
     return this.rec.frames[this.resolves[this.resolves.length - 1]] as Extract<Step, { type: 'resolve' }>;
   }
 
-  /** The current pivot, if it belongs to the current (latest) main range. */
-  activePivot(): number | null {
+  /** The current pivot step, if it belongs to the current (latest) main range. */
+  activePivotStep(): Extract<Step, { type: 'pivot' }> | null {
     if (this.pivots.length === 0) return null;
     const p = this.pivots[this.pivots.length - 1];
     const r = this.rangeMain.length ? this.rangeMain[this.rangeMain.length - 1] : -1;
     if (p < r) return null;
-    return (this.rec.frames[p] as Extract<Step, { type: 'pivot' }>).index;
+    return this.rec.frames[p] as Extract<Step, { type: 'pivot' }>;
+  }
+
+  /** Index of the current pivot (see activePivotStep). */
+  activePivot(): number | null {
+    return this.activePivotStep()?.index ?? null;
   }
 }
 

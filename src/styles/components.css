@@ -267,6 +267,21 @@ input[type='range'] {
 .search-marker--mid { background: var(--probe-mid); }
 .search-marker--hi { background: var(--probe-hi); }
 
+/* pivot label (ctx.pivot(i, line, label)) */
+.pivot-marker {
+  position: absolute;
+  bottom: -2px;
+  transform: translate(-50%, 100%);
+  pointer-events: none;
+  font: 600 11px/1 var(--font-mono);
+  padding: 2px 4px;
+  border-radius: 4px;
+  white-space: nowrap;
+  color: var(--accent-contrast);
+  background: var(--bar-pivot);
+}
+.pivot-marker[data-hidden='true'] { display: none; }
+
 .stage-message {
   position: absolute;
   inset: 20% 12% auto;

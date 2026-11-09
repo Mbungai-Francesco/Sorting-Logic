@@ -99,6 +99,7 @@ export const strings = {
   capWriteMany: { fr: '{n} écritures', en: '{n} writes' },
   capRead: { fr: 'Lit {arr}[{i}]', en: 'Read {arr}[{i}]' },
   capPivot: { fr: 'Pivot : a[{i}]', en: 'Pivot: a[{i}]' },
+  capPivotLabel: { fr: '{label} : a[{i}]', en: '{label}: a[{i}]' },
   capRange: { fr: 'Sous-tableau [{lo}, {hi}] (profondeur {d})', en: 'Sub-array [{lo}, {hi}] (depth {d})' },
   capSorted: { fr: '{n} élément(s) à sa place', en: '{n} element(s) in place' },
   capProbe: { fr: 'lo = {lo}, mid = {mid}, hi = {hi}', en: 'lo = {lo}, mid = {mid}, hi = {hi}' },

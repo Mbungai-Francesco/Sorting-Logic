@@ -27,7 +27,7 @@ export function* selectionSort(ctx: Ctx): Generator<Step> {
 			if (val > max) {
 				max = val;
 				pos = j;
-				yield ctx.pivot(pos, "max"); // @max
+				yield ctx.pivot(pos, "pivot", "max"); // @pivot
 				swap = pos != i - 1 ? true : false;
 			}
 		}

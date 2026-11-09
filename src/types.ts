@@ -23,7 +23,7 @@ export type Step =
   | (StepBase & { type: 'swap';       indices: [number, number]; writes: Write[] })
   | (StepBase & { type: 'overwrite';  writes: Write[] })
   | (StepBase & { type: 'read';       target: Target; index: number })
-  | (StepBase & { type: 'pivot';      index: number })
+  | (StepBase & { type: 'pivot';      index: number; label?: string })
   | (StepBase & { type: 'range';      lo: number; hi: number; depth: number; target: Target })
   | (StepBase & { type: 'markSorted'; indices: number[] })
   | (StepBase & { type: 'probe';      lo: number; mid: number; hi: number })
