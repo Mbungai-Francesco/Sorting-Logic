@@ -1,20 +1,5 @@
 import type { Ctx, Step } from '../core/ctx';
 
-/*
- * TODO — Recherche dichotomique
- *
- * Input is already sorted by the recorder (requiresSorted: true).
- * The target value arrives as the second argument.
- * Steps to emit:
- *  - probe(lo, mid, hi)     each iteration, before inspecting a[mid]
- *  - read(mid)              optional, to show the access
- *  - resolve(mid)           when found
- *  - resolve(null)          when lo > hi (not found)
- * Use ctx.value(mid) to compare with the target (no compare() step:
- * compare() is between two cells, not a cell and a value).
- *
- * See docs/ADDING_AN_ALGORITHM.md, and bubble.ts for a complete example.
- */
 export function* binarySearch(ctx: Ctx, target?: number): Generator<Step> {
 	if (target == undefined) throw new Error("Target is required");
 
