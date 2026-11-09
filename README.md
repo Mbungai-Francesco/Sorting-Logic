@@ -42,21 +42,6 @@ npx vitest run conformance -t insertion
 | R | regenerate (new seed) |
 | 0 | back to the start |
 
-## Deploying to GitHub Pages
-
-1. `vite.config.ts` sets `base` to `/Sorting-Logic/` for production builds,
-   because Pages serves the site from `https://<user>.github.io/<repo>/`.
-   If you rename the repository, change `REPO_BASE`. For a custom domain or a
-   `<user>.github.io` repository, set it to `'/'`.
-2. In the repository on GitHub: **Settings → Pages → Build and deployment →
-   Source: GitHub Actions**.
-3. Push to `main`. `.github/workflows/deploy.yml` installs, runs the tests,
-   builds and publishes `dist/`. You can also run it by hand from the
-   **Actions** tab (`workflow_dispatch`).
-
-The app has no router and keeps its state in the query string, so no 404
-fallback is needed.
-
 ## Architecture
 
 ```

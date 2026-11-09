@@ -28,7 +28,7 @@ export function* binarySearch(ctx: Ctx, target?: number): Generator<Step> {
 		yield ctx.probe(lo, midIndex, hi, "probe"); //@probe
 
 		const midVal = ctx.value(midIndex);
-		if (midVal == target) found = true;
+		if (target == midVal) found = true;
 		else if (target < midVal) hi = midIndex - 1;
 		else lo = midIndex + 1;
 
@@ -38,5 +38,3 @@ export function* binarySearch(ctx: Ctx, target?: number): Generator<Step> {
 	}
   if (!found) yield ctx.resolve(null);
 }
-
-
