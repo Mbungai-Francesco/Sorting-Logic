@@ -203,6 +203,7 @@ export type BarState =
   | 'idle'
   | 'comparing'
   | 'swapping'
+  | 'shifting'
   | 'reading'
   | 'pivot'
   | 'sorted'
@@ -278,6 +279,12 @@ export function computeBarStates(tl: Timeline, target: Target, out: BarState[]):
       break;
     case 'overwrite':
       for (const w of step.writes) if (w.target === target) out[w.index] = 'swapping';
+      break;
+    case 'insert':
+      if (target === 'main') {
+        for (const w of step.writes) out[w.index] = 'shifting';
+        out[step.to] = 'swapping';
+      }
       break;
     case 'read':
       if (step.target === target) out[step.index] = 'reading';

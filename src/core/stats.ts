@@ -3,7 +3,7 @@ import type { Step } from '../types';
 export interface Counters {
   comparisons: number;
   swaps: number;
-  /** Individual cells written (a swap writes 2 cells, an overwrite 1). */
+  /** Individual cells written (a swap writes 2 cells, an overwrite 1, an insert every shifted cell + 1). */
   writes: number;
   /** Explicit `read` steps. */
   reads: number;
@@ -38,6 +38,7 @@ export function accumulate(c: Counters, step: Step): void {
       c.writes += step.writes.length;
       break;
     case 'overwrite':
+    case 'insert':
       c.writes += step.writes.length;
       break;
     case 'read':

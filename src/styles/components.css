@@ -227,6 +227,7 @@ input[type='range'] {
 }
 .bar[data-state='comparing'] { background: var(--bar-comparing); }
 .bar[data-state='swapping'] { background: var(--bar-swapping); }
+.bar[data-state='shifting'] { background: color-mix(in srgb, var(--bar-swapping) 45%, var(--bar-idle)); }
 .bar[data-state='reading'] { background: var(--bar-reading); }
 .bar[data-state='pivot'] { background: var(--bar-pivot); }
 .bar[data-state='sorted'] { background: var(--bar-sorted); }

@@ -41,6 +41,14 @@ export interface Ctx {
 
   swap(i: number, j: number, line?: string): Step;
   write(i: number, v: number, line?: string, target?: Target): Step;
+  /**
+   * Moves main[from] into cell `to` and shifts every cell in between by one
+   * toward `from`, in a single step:
+   *   to < from → cells [to, from - 1] shift one to the RIGHT (insertion sort)
+   *   to > from → cells [from + 1, to] shift one to the LEFT
+   * The array length never changes. insert(i, i) is a no-op step.
+   */
+  insert(from: number, to: number, line?: string): Step;
   read(i: number, line?: string, target?: Target): Step;
   /**
    * Highlights main[i] as the pivot (or any "special" cell, e.g. the current max).
@@ -168,6 +176,23 @@ export class WorkingCtx implements Ctx {
     const w: Write = { target, index: i, from: arr[i], to: v };
     arr[i] = v;
     return this.emit('write', { type: 'overwrite', writes: [w], line });
+  }
+
+  insert(from: number, to: number, line?: string): Step {
+    this.check('insert', from);
+    this.check('insert', to);
+    const a = this.main;
+    const old = a.slice(Math.min(from, to), Math.max(from, to) + 1);
+    const moved = a[from];
+    if (from > to) for (let k = from; k > to; k--) a[k] = a[k - 1];
+    else for (let k = from; k < to; k++) a[k] = a[k + 1];
+    a[to] = moved;
+    const lo = Math.min(from, to);
+    const writes: Write[] = [];
+    if (from !== to) {
+      for (let k = 0; k < old.length; k++) writes.push({ target: 'main', index: lo + k, from: old[k], to: a[lo + k] });
+    }
+    return this.emit('insert', { type: 'insert', from, to, writes, line });
   }
 
   read(i: number, line?: string, target: Target = 'main'): Step {

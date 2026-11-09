@@ -97,6 +97,8 @@ export const strings = {
   capSwap: { fr: 'Échange a[{i}] et a[{j}]', en: 'Swap a[{i}] and a[{j}]' },
   capWrite: { fr: 'Écrit {v} dans {arr}[{i}]', en: 'Write {v} into {arr}[{i}]' },
   capWriteMany: { fr: '{n} écritures', en: '{n} writes' },
+  capInsertRight: { fr: 'Insère a[{i}] en position {j}, décale a[{j}..{i}] vers la droite', en: 'Insert a[{i}] at {j}, shift a[{j}..{i}] right' },
+  capInsertLeft: { fr: 'Insère a[{i}] en position {j}, décale a[{i}..{j}] vers la gauche', en: 'Insert a[{i}] at {j}, shift a[{i}..{j}] left' },
   capRead: { fr: 'Lit {arr}[{i}]', en: 'Read {arr}[{i}]' },
   capPivot: { fr: 'Pivot : a[{i}]', en: 'Pivot: a[{i}]' },
   capPivotLabel: { fr: '{label} : a[{i}]', en: '{label}: a[{i}]' },

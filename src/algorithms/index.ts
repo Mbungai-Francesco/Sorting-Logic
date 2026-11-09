@@ -34,7 +34,7 @@ export const algorithms: AlgorithmEntry[] = [
     id: 'insertion',
     name: { fr: 'Tri par insertion', en: 'Insertion sort' },
     kind: 'sort',
-    implemented: false,
+    implemented: true,
     needsAux: false,
     complexity: { best: 'O(n)', average: 'O(n²)', worst: 'O(n²)', space: 'O(1)', stable: true },
     source: insertionSource,

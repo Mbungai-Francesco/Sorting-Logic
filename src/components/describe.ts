@@ -27,6 +27,8 @@ export function describeStep(step: Step, values: readonly number[], t: I18n['t']
         return t('capWrite', { v: w.to, arr: arr(w.target), i: w.index });
       }
       return t('capWriteMany', { n: step.writes.length });
+    case 'insert':
+      return t(step.to < step.from ? 'capInsertRight' : 'capInsertLeft', { i: step.from, j: step.to });
     case 'read':
       return t('capRead', { arr: arr(step.target), i: step.index });
     case 'pivot':

@@ -109,6 +109,29 @@ describe('recorder guards', () => {
     expect(tl.activePivot()).toBe(0);
   });
 
+  it('insert() moves one value and shifts the cells in between, both ways', () => {
+    const entry = make(function* (ctx) {
+      yield ctx.insert(3, 0); // [1,2,3,4,5] → [4,1,2,3,5]  (shift right)
+      yield ctx.insert(0, 4); // [4,1,2,3,5] → [1,2,3,5,4]  (shift left)
+      yield ctx.insert(2, 2); // no-op
+    });
+    const rec = record(entry, [1, 2, 3, 4, 5]);
+    expect(rec.final).toEqual([1, 2, 3, 5, 4]);
+    expect(rec.frames[0]).toMatchObject({ type: 'insert', from: 3, to: 0 });
+    expect((rec.frames[0] as Extract<Step, { type: 'insert' }>).writes).toHaveLength(4);
+    expect((rec.frames[2] as Extract<Step, { type: 'insert' }>).writes).toHaveLength(0);
+
+    const tl = new Timeline(rec);
+    tl.forward();
+    expect(tl.main).toEqual([4, 1, 2, 3, 5]);
+    tl.forward();
+    expect(tl.main).toEqual([1, 2, 3, 5, 4]);
+    tl.backward();
+    tl.backward();
+    expect(tl.main).toEqual([1, 2, 3, 4, 5]);
+    expect(rec.stats.totals.writes).toBe(9);
+  });
+
   it('records aux writes with working inverses', () => {
     const entry = make(function* (ctx) {
       ctx.initAux(ctx.size);

@@ -9,6 +9,7 @@ const NO_WRITES: readonly Write[] = Object.freeze([]);
  * arrays, in place. Returns the writes that were applied — each carries its
  * `target` and `index`, which is exactly what the renderer needs to repaint.
  * Steps without writes (compare, read, pivot, …) return an empty list.
+ * swap, overwrite and insert carry writes.
  *
  * Backward application walks the writes in reverse order so that a step
  * writing the same cell twice still inverts correctly.
@@ -19,7 +20,7 @@ export function applyStep(
   main: number[],
   aux: number[],
 ): readonly Write[] {
-  if (step.type !== 'swap' && step.type !== 'overwrite') return NO_WRITES;
+  if (step.type !== 'swap' && step.type !== 'overwrite' && step.type !== 'insert') return NO_WRITES;
   const writes = step.writes;
   if (dir === 1) {
     for (let k = 0; k < writes.length; k++) {

@@ -37,6 +37,7 @@ inverse. You never build steps by hand.
 | `ctx.lastCompare` | — | `a[i] - a[j]` from the last `compare()`: `> 0` means `a[i] > a[j]` |
 | `ctx.swap(i, j, line?)` | `swap` | exchanging two cells |
 | `ctx.write(i, v, line?, target?)` | `overwrite` | writing a value into a cell (`'main'` or `'aux'`) |
+| `ctx.insert(from, to, line?)` | `insert` | moving one value to another cell and shifting the cells in between by one. `to < from` shifts them **right** (insertion sort: `insert(i, j)` drops `a[i]` at `j`), `to > from` shifts them **left**. One step, fully reversible. Counts as `|from − to| + 1` writes. |
 | `ctx.read(i, line?, target?)` | `read` | showing that a cell is being read (merge sort, binary search) |
 | `ctx.pivot(i, line?, label?)` | `pivot` | the pivot of the current partition is chosen, or any cell you want to single out (e.g. the current max). With a `label` (`'max'`, `'p'`…), the label is drawn under the bar like lo / mid / hi. The highlight stays until the next `pivot()` or `range()`. |
 | `ctx.range(lo, hi, depth, line?, target?)` | `range` | entering a sub-array (recursive call). Cells outside `[lo, hi]` are dimmed. `depth` feeds the "max depth" counter. |
