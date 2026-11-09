@@ -6,7 +6,7 @@ comparison, swap and write. The source code panel highlights the line being
 executed, and the counters show running vs total comparisons, swaps, writes,
 reads and recursion depth.
 
-The interface is in French by default, with an English toggle in the header.
+The interface is in English by default, with a French toggle in the header.
 Bubble sort is implemented as the reference. The other algorithms are stubs,
 to be written as an exercise; see [docs/ADDING_AN_ALGORITHM.md](docs/ADDING_AN_ALGORITHM.md).
 

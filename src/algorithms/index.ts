@@ -44,7 +44,7 @@ export const algorithms: AlgorithmEntry[] = [
     id: 'selection',
     name: { fr: 'Tri par sélection', en: 'Selection sort' },
     kind: 'sort',
-    implemented: false,
+    implemented: true,
     needsAux: false,
     complexity: { best: 'O(n²)', average: 'O(n²)', worst: 'O(n²)', space: 'O(1)', stable: false },
     source: selectionSource,

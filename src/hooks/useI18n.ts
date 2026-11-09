@@ -10,7 +10,7 @@ export interface I18n {
 }
 
 const STORAGE_KEY = 'sorting-logic.locale';
-export const DEFAULT_LOCALE: Locale = 'fr';
+export const DEFAULT_LOCALE: Locale = 'en';
 
 export function translate(locale: Locale, key: StringKey, params?: Params): string {
   const s: string = strings[key][locale];
