@@ -1,0 +1,81 @@
+.app {
+  display: grid;
+  grid-template-columns: 210px minmax(0, 1fr) minmax(300px, 380px);
+  grid-template-rows: auto minmax(0, 1fr);
+  grid-template-areas:
+    'header header header'
+    'left   center right';
+  gap: var(--gap);
+  padding: var(--gap);
+  height: 100vh;
+  min-height: 620px;
+}
+
+.app-header {
+  grid-area: header;
+  display: flex;
+  align-items: baseline;
+  gap: 16px;
+}
+
+.app-header h1 {
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.app-header .shortcuts {
+  margin-left: auto;
+}
+
+.app-left {
+  grid-area: left;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.app-center {
+  grid-area: center;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  min-width: 0;
+  min-height: 0;
+}
+
+.app-right {
+  grid-area: right;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* laptop: narrower side columns */
+@media (max-width: 1280px) {
+  .app {
+    grid-template-columns: 180px minmax(0, 1fr) 300px;
+  }
+}
+
+/* small laptop / tablet: right column moves under the stage, page scrolls */
+@media (max-width: 1050px) {
+  .app {
+    grid-template-columns: 170px minmax(0, 1fr);
+    grid-template-rows: auto minmax(520px, 70vh) auto;
+    grid-template-areas:
+      'header header'
+      'left   center'
+      'right  right';
+    height: auto;
+  }
+  .app-right {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    overflow: visible;
+  }
+  .app-header .shortcuts {
+    display: none;
+  }
+}

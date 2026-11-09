@@ -1,0 +1,100 @@
+/*
+ * Theme tokens. Every colour in the app is defined here — swap the theme by
+ * editing this one file. Dark first; light values apply when the OS asks.
+ */
+:root {
+  color-scheme: dark;
+
+  --bg: #0f1117;
+  --surface: #171a23;
+  --surface-2: #1f2330;
+  --border: #2a2f3d;
+  --text: #e6e8ef;
+  --text-muted: #8b91a3;
+  --accent: #7aa2ff;
+  --accent-contrast: #0b1020;
+  --danger: #ff6b6b;
+  --warning: #ffcc66;
+  --focus: #7aa2ff;
+
+  /* bars */
+  --bar-idle: #4b5876;
+  --bar-comparing: #ffcc66;
+  --bar-swapping: #ff6b6b;
+  --bar-reading: #6fd3ff;
+  --bar-pivot: #c792ea;
+  --bar-sorted: #4fd18b;
+  --bar-out-of-range: #2a3040;
+  --bar-label: #0b0d12;
+  --bar-aux-bg: #141823;
+
+  /* search markers */
+  --probe-lo: #6fd3ff;
+  --probe-mid: #ffcc66;
+  --probe-hi: #f78c6c;
+  --search-shade: rgb(15 17 23 / 0.55);
+
+  /* code panel */
+  --code-bg: #12151d;
+  --code-active-bg: rgb(122 162 255 / 0.18);
+  --code-active-bar: #7aa2ff;
+  --tok-kw: #c792ea;
+  --tok-str: #c3e88d;
+  --tok-num: #f78c6c;
+  --tok-com: #6b7389;
+  --tok-marker: #4a5166;
+
+  --radius: 8px;
+  --gap: 12px;
+  --font-sans: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+  --transition-fast: 90ms;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color-scheme: light;
+
+    --bg: #f5f6fa;
+    --surface: #ffffff;
+    --surface-2: #eef0f6;
+    --border: #d8dce6;
+    --text: #1a1d26;
+    --text-muted: #5d6475;
+    --accent: #3157d5;
+    --accent-contrast: #ffffff;
+    --danger: #d43c3c;
+    --warning: #9a6a00;
+    --focus: #3157d5;
+
+    --bar-idle: #8e9ab5;
+    --bar-comparing: #f0b429;
+    --bar-swapping: #e5484d;
+    --bar-reading: #2ba3d6;
+    --bar-pivot: #9156c9;
+    --bar-sorted: #2f9e5f;
+    --bar-out-of-range: #dde1ea;
+    --bar-label: #ffffff;
+    --bar-aux-bg: #f0f2f7;
+
+    --probe-lo: #2ba3d6;
+    --probe-mid: #c98a00;
+    --probe-hi: #d9622b;
+    --search-shade: rgb(245 246 250 / 0.6);
+
+    --code-bg: #f7f8fb;
+    --code-active-bg: rgb(49 87 213 / 0.12);
+    --code-active-bar: #3157d5;
+    --tok-kw: #8031b8;
+    --tok-str: #2f7d32;
+    --tok-num: #b8501f;
+    --tok-com: #8a90a0;
+    --tok-marker: #b5bac6;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --transition-fast: 0ms;
+  }
+}
