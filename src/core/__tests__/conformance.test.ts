@@ -132,6 +132,47 @@ describe('recorder guards', () => {
     expect(rec.stats.totals.writes).toBe(9);
   });
 
+  it('split() / join() open and close gaps, reversibly', () => {
+    const entry = make(function* (ctx) {
+      yield ctx.split(2, 0); // [a b | c d]
+      yield ctx.split(1, 1); // [a | b | c d]
+      yield ctx.join(1); //     [a b | c d]
+      yield ctx.join(2); //     [a b c d]
+    });
+    const rec = record(entry, [4, 3, 2, 1]);
+    const tl = new Timeline(rec);
+    const d: number[] = [];
+    const gapsAt = (c: number) => {
+      tl.seek(c);
+      tl.splitDepths(4, d);
+      return d.slice();
+    };
+    expect(gapsAt(1)).toEqual([-1, -1, 0, -1]);
+    expect(gapsAt(2)).toEqual([-1, 1, 0, -1]);
+    expect(gapsAt(3)).toEqual([-1, -1, 0, -1]);
+    expect(gapsAt(4)).toEqual([-1, -1, -1, -1]);
+    // stepping back reopens the joined gaps
+    expect(gapsAt(3)).toEqual([-1, -1, 0, -1]);
+    expect(gapsAt(2)).toEqual([-1, 1, 0, -1]);
+    expect(gapsAt(0)).toEqual([-1, -1, -1, -1]);
+  });
+
+  it('rejects join() without a split and out-of-range splits', () => {
+    expect(() => record(make(function* (ctx) { yield ctx.join(1); }), [2, 1])).toThrow(/no open split/);
+    expect(() => record(make(function* (ctx) { yield ctx.split(0, 0); }), [2, 1])).toThrow(/1 ≤ at ≤ 1/);
+    expect(() => record(make(function* (ctx) { yield ctx.split(2, 0); }), [2, 1])).toThrow(/1 ≤ at ≤ 1/);
+  });
+
+  it('merge sort closes every gap it opens', () => {
+    const merge = algorithms.find((a) => a.id === 'merge')!;
+    const rec = record(merge, [5, 2, 8, 1, 9, 3, 7]);
+    const tl = new Timeline(rec);
+    tl.seek(rec.frames.length);
+    expect(tl.splits.size).toBe(0);
+    const splits = rec.frames.filter((s) => s.type === 'split').length;
+    expect(splits).toBe(6); // n - 1 splits for n = 7
+  });
+
   it('records aux writes with working inverses', () => {
     const entry = make(function* (ctx) {
       ctx.initAux(ctx.size);

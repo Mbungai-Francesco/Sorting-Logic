@@ -9,6 +9,8 @@ import type { Ctx, Step } from '../core/ctx';
  *  - compare(j, p)          each element vs the pivot
  *  - swap(i, j)             partition swaps, then the final pivot placement
  *  - markSorted([p])        when the pivot reaches its final position
+ *  - split(p, depth)        tree view: after partitioning, if p > lo,
+ *    split(p + 1, depth)    and if p < hi, so the pivot gets its own box
  *
  * See docs/ADDING_AN_ALGORITHM.md, and bubble.ts for a complete example.
  */

@@ -27,12 +27,22 @@ export type Step =
   | (StepBase & { type: 'pivot';      index: number; label?: string })
   | (StepBase & { type: 'range';      lo: number; hi: number; depth: number; target: Target })
   | (StepBase & { type: 'markSorted'; indices: number[] })
+  | (StepBase & { type: 'split';      at: number; depth: number })
+  | (StepBase & { type: 'join';       at: number })
   | (StepBase & { type: 'probe';      lo: number; mid: number; hi: number })
   | (StepBase & { type: 'resolve';    index: number | null });
 
 export type StepType = Step['type'];
 
 export type AlgoKind = 'sort' | 'search';
+
+/**
+ * Extra visualisation offered next to the bars:
+ *  - 'dcTree':   recursion diagram (split rows, then merge rows), built from
+ *                split()/join() steps — merge sort, quicksort
+ *  - 'heapTree': the array drawn as a binary heap (children 2i+1, 2i+2)
+ */
+export type TreeView = 'dcTree' | 'heapTree';
 
 export interface Complexity {
   best: string; average: string; worst: string; space: string; stable: boolean;
@@ -46,6 +56,8 @@ export interface AlgorithmEntry {
   needsAux: boolean;
   requiresSorted?: boolean;
   requiresTarget?: boolean;
+  /** Tree view shown by default (with a toggle back to bars). */
+  view?: TreeView;
   complexity: Complexity;
   source: string;                       // imported with ?raw
   run: (ctx: Ctx, target?: number) => Generator<Step>;

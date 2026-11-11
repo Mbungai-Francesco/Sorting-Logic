@@ -54,10 +54,11 @@ export const algorithms: AlgorithmEntry[] = [
     id: 'merge',
     name: { fr: 'Tri fusion', en: 'Merge sort' },
     kind: 'sort',
-    implemented: false,
+    implemented: true,
     needsAux: true,
     complexity: { best: 'O(n log n)', average: 'O(n log n)', worst: 'O(n log n)', space: 'O(n)', stable: true },
     source: mergeSource,
+    view: 'dcTree',
     run: mergeSort,
   },
   {
@@ -68,6 +69,7 @@ export const algorithms: AlgorithmEntry[] = [
     needsAux: false,
     complexity: { best: 'O(n log n)', average: 'O(n log n)', worst: 'O(n²)', space: 'O(log n)', stable: false },
     source: quickSource,
+    view: 'dcTree',
     run: quickSort,
   },
   {
@@ -78,6 +80,7 @@ export const algorithms: AlgorithmEntry[] = [
     needsAux: false,
     complexity: { best: 'O(n log n)', average: 'O(n log n)', worst: 'O(n log n)', space: 'O(1)', stable: false },
     source: heapSource,
+    view: 'heapTree',
     run: heapSort,
   },
   {

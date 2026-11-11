@@ -13,6 +13,7 @@ export class RowPainter {
   private heights: number[] = [];
   private states: string[] = [];
   private labels: string[] = [];
+  private gaps: number[] = [];
 
   /**
    * @param dirty indices whose value changed, or null to repaint everything
@@ -24,6 +25,7 @@ export class RowPainter {
     scaleMax: number,
     dirty: Iterable<number> | null,
     showLabels: boolean,
+    gaps?: readonly number[],
   ): void {
     const bars = container.children;
     const len = Math.min(bars.length, values.length);
@@ -31,6 +33,7 @@ export class RowPainter {
       this.heights = new Array<number>(len).fill(-1);
       this.states = new Array<string>(len).fill('');
       this.labels = new Array<string>(len).fill('');
+      this.gaps = new Array<number>(len).fill(0);
       dirty = null;
     }
 
@@ -61,22 +64,39 @@ export class RowPainter {
         (bars[i] as HTMLElement).dataset.state = s;
         this.states[i] = s;
       }
+      const g = gaps?.[i] ?? 0;
+      if (g !== this.gaps[i]) {
+        (bars[i] as HTMLElement).style.marginLeft = g ? `${g}px` : '';
+        this.gaps[i] = g;
+      }
     }
   }
+}
+
+/**
+ * Split gap width in px for a split at `depth`. Shallower splits get wider
+ * gaps so the nesting reads at a glance; the base shrinks with n so a deep
+ * split of 100+ bars doesn't eat the row.
+ */
+export function splitGapPx(depth: number, n: number): number {
+  const base = n <= 16 ? 18 : n <= 40 ? 10 : n <= 80 ? 6 : 4;
+  return Math.max(2, Math.round(base / (depth + 1)));
 }
 
 /** Places the pivot's label marker under its bar, or hides it. */
 export function paintPivotMarker(
   el: HTMLElement,
   pivot: { index: number; label?: string } | null,
-  n: number,
+  bars: HTMLCollection,
 ): void {
-  if (!pivot || pivot.label === undefined || n === 0) {
+  const bar = pivot ? (bars[pivot.index] as HTMLElement | undefined) : undefined;
+  if (!pivot || pivot.label === undefined || !bar) {
     el.dataset.hidden = 'true';
     return;
   }
   el.dataset.hidden = 'false';
-  el.style.left = `${((pivot.index + 0.5) / n) * 100}%`;
+  // Use the bar's real position: split gaps make bars uneven.
+  el.style.left = `${bar.offsetLeft + bar.offsetWidth / 2}px`;
   if (el.textContent !== pivot.label) el.textContent = pivot.label;
 }
 

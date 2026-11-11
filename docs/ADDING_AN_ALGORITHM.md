@@ -42,6 +42,8 @@ inverse. You never build steps by hand.
 | `ctx.pivot(i, line?, label?)` | `pivot` | the pivot of the current partition is chosen, or any cell you want to single out (e.g. the current max). With a `label` (`'max'`, `'p'`…), the label is drawn under the bar like lo / mid / hi. The highlight stays until the next `pivot()` or `range()`. |
 | `ctx.range(lo, hi, depth, line?, target?)` | `range` | entering a sub-array (recursive call). Cells outside `[lo, hi]` are dimmed. `depth` feeds the "max depth" counter. |
 | `ctx.markSorted(indices, line?)` | `markSorted` | cells reached their final position (shown in green until you step back) |
+| `ctx.split(at, depth, line?)` | `split` | dividing the array (merge sort): opens a visible gap **before** cell `at`, so each side reads as its own sub-array. Shallower `depth` → wider gap. `1 ≤ at ≤ size − 1`. |
+| `ctx.join(at, line?)` | `join` | closes the gap opened by `split(at)` once the two halves are merged back into one. Joining a boundary that isn't split throws. |
 | `ctx.probe(lo, mid, hi, line?)` | `probe` | each iteration of a search: draws the lo/mid/hi markers and shades the eliminated halves |
 | `ctx.resolve(index \| null, line?)` | `resolve` | the search ends: found at `index`, or `null` if not found |
 | `ctx.note(text)` | nothing | attaches a French caption to the **next** step |
@@ -115,8 +117,8 @@ that was not returned by a ctx method".
 |---|---|
 | Insertion | `compare(j-1, j)` + `swap(j-1, j)` (or `write` the shifted cells, then the key); `markSorted` at the end |
 | Selection | `compare(j, minIdx)` while scanning (non-adjacent is fine); `swap(i, minIdx)`; `markSorted([i])` per pass |
-| Merge | `initAux(n)` once; `range(lo, hi, depth)` per call; `compare(i, j)` in main; `write(k, v, line, 'aux')` to merge into aux; `write(k, ctx.value(k, 'aux'))` to copy back; optional `read` |
-| Quick | `range(lo, hi, depth)` per call; `pivot(p)`; `compare(j, p)`; `swap` while partitioning; `markSorted([p])` once placed |
+| Merge | `initAux(n)` once; `range(lo, hi, depth)` per call; `split(mid, depth)` before recursing, `join(mid)` after merging; `compare(i, j)` in main; `write(k, v, line, 'aux')` to merge into aux; `write(k, ctx.value(k, 'aux'))` to copy back; optional `read` |
+| Quick | `range(lo, hi, depth)` per call; `pivot(p)`; `compare(j, p)`; `swap` while partitioning; `markSorted([p])` once placed; after partitioning, `if (p > lo) split(p, depth)` and `if (p < hi) split(p + 1, depth)` for the tree view (no `join`) |
 | Heap | `compare(child, largest)` (non-adjacent indices: 2i+1, 2i+2); `swap` in sift-down; `swap(0, end)` + `markSorted([end])` per extraction |
 | Binary search | `probe(lo, mid, hi)` per iteration; optional `read(mid)`; `resolve(mid)` or `resolve(null)`. Compare with the target with `ctx.value(mid)`. The input is already sorted (`requiresSorted: true`), and the target is the generator's second argument. |
 
@@ -124,6 +126,21 @@ Merge sort pattern: `compare` only works on the main array. That is enough,
 because while you merge `[lo..mid]` and `[mid+1..hi]` into **aux**, both halves
 of main are still unchanged. Compare in main, write into aux, then copy aux
 back into main.
+
+## Tree views
+
+Some algorithms read better as a tree than as bars. Set `view` in the
+registry and the stage shows the tree by default, with a **Tree / Bars**
+toggle:
+
+| `view` | What it draws | What it needs from your steps |
+|---|---|---|
+| `'dcTree'` | The recursion diagram: each sub-array on its own row as it is split (grey), then the merged results (green), with an arrow from every source cell to where its value lands. | `split(at, depth)` each time you divide, `join(at)` once the two halves are merged back. Merged cells are the first write to each cell while both halves are finished (the writes into aux, for merge sort). No `join` (quicksort) → only the divide rows; the leaves row then reads as the sorted array. |
+| `'heapTree'` | The array as a binary heap: `a[i]`'s children are `a[2i+1]` and `a[2i+2]`. Live values, same colours as the bars; cells marked sorted have left the heap (dashed edge). The bars stay underneath. | Nothing extra: `compare`, `swap` and `markSorted` as usual. |
+
+`split(at)` always cuts the deepest current sub-array that contains both
+`a[at-1]` and `a[at]`, so you never pass `lo`/`hi`. The tree is built by
+`src/core/dcTree.ts`.
 
 ## Line markers
 

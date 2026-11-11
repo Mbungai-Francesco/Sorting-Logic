@@ -25,6 +25,10 @@ export class Timeline {
   readonly pivots: number[] = [];
   readonly probes: number[] = [];
   readonly resolves: number[] = [];
+  /** Open split gaps: boundary index → frame indices of its split steps (top = active). */
+  readonly splits = new Map<number, number[]>();
+  /** Split frames closed by a join, in order, so backward() can reopen them. */
+  readonly joined: number[] = [];
 
   /** Indices whose value changed since the last takeDirty(). */
   private dirtyMain = new Set<number>();
@@ -73,6 +77,19 @@ export class Timeline {
       case 'resolve':
         this.resolves.push(idx);
         break;
+      case 'split': {
+        const stack = this.splits.get(step.at);
+        if (stack) stack.push(idx);
+        else this.splits.set(step.at, [idx]);
+        break;
+      }
+      case 'join': {
+        const stack = this.splits.get(step.at);
+        const opened = stack?.pop();
+        if (opened !== undefined) this.joined.push(opened);
+        if (stack && stack.length === 0) this.splits.delete(step.at);
+        break;
+      }
       default:
         break;
     }
@@ -102,6 +119,21 @@ export class Timeline {
       case 'resolve':
         this.resolves.pop();
         break;
+      case 'split': {
+        const stack = this.splits.get(step.at);
+        stack?.pop();
+        if (stack && stack.length === 0) this.splits.delete(step.at);
+        break;
+      }
+      case 'join': {
+        const opened = this.joined.pop();
+        if (opened !== undefined) {
+          const stack = this.splits.get(step.at);
+          if (stack) stack.push(opened);
+          else this.splits.set(step.at, [opened]);
+        }
+        break;
+      }
       default:
         break;
     }
@@ -120,6 +152,8 @@ export class Timeline {
     this.pivots.length = 0;
     this.probes.length = 0;
     this.resolves.length = 0;
+    this.splits.clear();
+    this.joined.length = 0;
     this.cursor = 0;
     this.allDirty = true;
   }
@@ -181,6 +215,20 @@ export class Timeline {
   latestResolve(): Extract<Step, { type: 'resolve' }> | null {
     if (this.resolves.length === 0) return null;
     return this.rec.frames[this.resolves[this.resolves.length - 1]] as Extract<Step, { type: 'resolve' }>;
+  }
+
+  /**
+   * Fills `out` (length n) with the depth of the open split gap before each
+   * cell, or -1 where there is none.
+   */
+  splitDepths(n: number, out: number[]): void {
+    out.length = n;
+    out.fill(-1);
+    for (const [at, stack] of this.splits) {
+      if (at < n && stack.length) {
+        out[at] = (this.rec.frames[stack[stack.length - 1]] as Extract<Step, { type: 'split' }>).depth;
+      }
+    }
   }
 
   /** The current pivot step, if it belongs to the current (latest) main range. */

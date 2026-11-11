@@ -58,6 +58,15 @@ export interface Ctx {
   pivot(i: number, line?: string, label?: string): Step;
   range(lo: number, hi: number, depth: number, line?: string, target?: Target): Step;
   markSorted(indices: number[], line?: string): Step;
+  /**
+   * Visually splits the array before cell `at`: a gap opens between
+   * a[at - 1] and a[at], so each side reads as its own sub-array.
+   * `depth` sets the gap width (shallower splits get wider gaps).
+   * The gap stays until join(at). 1 ≤ at ≤ size - 1.
+   */
+  split(at: number, depth: number, line?: string): Step;
+  /** Closes the gap opened by split(at): the two sub-arrays are one again. */
+  join(at: number, line?: string): Step;
   probe(lo: number, mid: number, hi: number, line?: string): Step;
   resolve(index: number | null, line?: string): Step;
 
@@ -93,6 +102,8 @@ export class WorkingCtx implements Ctx {
   private outstanding: Step | null = null;
   private outstandingMethod = '';
   private _lastCompare = 0;
+  /** Open split() gaps per boundary index, so join() can be validated. */
+  private openSplits = new Map<number, number>();
 
   constructor(input: readonly number[]) {
     this.main = input.slice();
@@ -223,6 +234,29 @@ export class WorkingCtx implements Ctx {
   markSorted(indices: number[], line?: string): Step {
     for (const i of indices) this.check('markSorted', i);
     return this.emit('markSorted', { type: 'markSorted', indices: indices.slice(), line });
+  }
+
+  split(at: number, depth: number, line?: string): Step {
+    if (!Number.isInteger(at) || at < 1 || at > this.main.length - 1) {
+      throw new CtxError(
+        `ctx.split(${at}): the gap goes BEFORE cell \`at\`, so expected 1 ≤ at ≤ ${this.main.length - 1}.`,
+      );
+    }
+    if (!Number.isInteger(depth) || depth < 0) {
+      throw new CtxError(`ctx.split: depth must be a non-negative integer, got ${depth}.`);
+    }
+    this.openSplits.set(at, (this.openSplits.get(at) ?? 0) + 1);
+    return this.emit('split', { type: 'split', at, depth, line });
+  }
+
+  join(at: number, line?: string): Step {
+    const open = this.openSplits.get(at) ?? 0;
+    if (open === 0) {
+      throw new CtxError(`ctx.join(${at}): there is no open split at ${at}. Call ctx.split(${at}, depth) first.`);
+    }
+    if (open === 1) this.openSplits.delete(at);
+    else this.openSplits.set(at, open - 1);
+    return this.emit('join', { type: 'join', at, line });
   }
 
   probe(lo: number, mid: number, hi: number, line?: string): Step {

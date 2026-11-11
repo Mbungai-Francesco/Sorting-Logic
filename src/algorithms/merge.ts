@@ -1,22 +1,58 @@
 import type { Ctx, Step } from '../core/ctx';
 
 /*
- * TODO — Tri fusion
+ * Merge sort, top-down.
  *
- * Needs the auxiliary row: call ctx.initAux(ctx.size) first
- * (and set needsAux: true in the registry — already done).
- * Steps to emit:
- *  - range(lo, hi, depth)               when entering each recursive call
- *  - compare(i, j)                      left-half vs right-half element (main)
- *  - read(i) / read(k, line, 'aux')     when loading a value (optional but visible)
- *  - write(k, v, line, 'aux')           merge into aux (an 'overwrite' on aux)
- *  - write(k, ctx.value(k, 'aux'))      copy the merged run back into main
- *  - markSorted([...])                  at the end
- * Pattern: compare in main, write the merged run into aux, copy aux back.
+ * divide(lo, hi) splits a[lo..hi] into a[lo..mid-1] and a[mid..hi] (a gap
+ * opens between them on screen), sorts each half recursively, merges them,
+ * then closes the gap: the two sub-arrays are one sorted array again.
  *
- * See docs/ADDING_AN_ALGORITHM.md, and bubble.ts for a complete example.
+ * merge(lo, mid, hi) compares the two halves in the MAIN row (they stay
+ * untouched while merging), writes the merged run into the AUX row, then
+ * copies it back into main.
  */
-// eslint-disable-next-line require-yield
-export function* mergeSort(_ctx: Ctx): Generator<Step> {
-  throw new Error('Not implemented');
+function* divide(ctx: Ctx, lo: number, hi: number, depth: number): Generator<Step> {
+  yield ctx.range(lo, hi, depth, 'divide'); // @divide
+  if (hi - lo < 1) return; // 0 or 1 element: already sorted
+
+  const mid = Math.ceil((lo + hi) / 2);
+  yield ctx.split(mid, depth, 'split'); // @split
+  yield* divide(ctx, lo, mid - 1, depth + 1);
+  yield* divide(ctx, mid, hi, depth + 1);
+
+  yield ctx.range(lo, hi, depth, 'focus'); // @focus
+  yield* merge(ctx, lo, mid, hi);
+  yield ctx.join(mid, 'join'); // @join
+}
+
+function* merge(ctx: Ctx, lo: number, mid: number, hi: number): Generator<Step> {
+  let i = lo; // next cell of the left half  a[lo..mid-1]
+  let j = mid; // next cell of the right half a[mid..hi]
+  let k = lo; // next cell to fill in aux
+
+  while (i < mid && j <= hi) {
+    yield ctx.compare(i, j, 'cmp'); // @cmp
+    if (ctx.lastCompare <= 0) {
+      yield ctx.write(k, ctx.value(i), 'takeLeft', 'aux'); // @takeLeft
+      i++;
+    } else {
+      yield ctx.write(k, ctx.value(j), 'takeRight', 'aux'); // @takeRight
+      j++;
+    }
+    k++;
+  }
+
+  while (i < mid) yield ctx.write(k++, ctx.value(i++), 'restLeft', 'aux'); // @restLeft
+  while (j <= hi) yield ctx.write(k++, ctx.value(j++), 'restRight', 'aux'); // @restRight
+
+  for (let t = lo; t <= hi; t++) {
+    yield ctx.write(t, ctx.value(t, 'aux'), 'copyBack'); // @copyBack
+  }
+}
+
+export function* mergeSort(ctx: Ctx): Generator<Step> {
+  const n = ctx.size;
+  ctx.initAux(n);
+  yield* divide(ctx, 0, n - 1, 0);
+  yield ctx.markSorted(Array.from({ length: n }, (_, k) => k), 'done'); // @done
 }

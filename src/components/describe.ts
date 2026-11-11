@@ -37,6 +37,10 @@ export function describeStep(step: Step, values: readonly number[], t: I18n['t']
         : t('capPivot', { i: step.index });
     case 'range':
       return t('capRange', { lo: step.lo, hi: step.hi, d: step.depth });
+    case 'split':
+      return t('capSplit', { i: step.at, j: step.at - 1 });
+    case 'join':
+      return t('capJoin', { i: step.at, j: step.at - 1 });
     case 'markSorted':
       return t('capSorted', { n: step.indices.length });
     case 'probe':

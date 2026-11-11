@@ -52,6 +52,7 @@ src/
     recorder.ts    runs a generator to completion → { frames, initial, final, lineMap, stats }
     patch.ts       applyStep(step, ±1, main, aux): writes `to` forward, `from` backward
     timeline.ts    cursor over a recording + sticky visual state; computeBarStates()
+    dcTree.ts      recursion tree (split/merge rows) derived from split/join steps
     player.ts      rAF playback loop with an injected scheduler; time-debt accumulator
     stats.ts       counters, with checkpoints every 1024 frames
     lineMap.ts     `// @marker` comments → line numbers
@@ -59,7 +60,8 @@ src/
     conformance.ts pure checks used by the test suite
   algorithms/      one generator per file + index.ts registry; imports only from core/
   hooks/           React glue: useRecording, usePlayer, useUrlState, useI18n
-  components/      UI; painter.ts writes bar heights/states straight to the DOM
+  components/      UI; painter.ts writes bar heights/states straight to the DOM;
+                   DcTreeView / HeapTreeView draw the tree views as SVG
   i18n/strings.ts  every visible string, { key: { fr, en } }
   styles/          plain CSS; all colours are tokens in theme.css
 ```
